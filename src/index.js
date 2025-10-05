@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import dbConnect from './config/db.js';
+import rootRouter from './routes/index.js';
 import { errorHandler } from './middleware/errorHandler.js';
 dotenv.config();
 const app = express();
@@ -19,6 +20,8 @@ app.use(express.json());
 app.use(cookieParser());
 //connect database
 dbConnect();
+// router api
+app.use('/api', rootRouter);
 // middleware error handler
 app.use(errorHandler);
 

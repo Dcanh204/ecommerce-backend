@@ -1,12 +1,12 @@
 
 import { StatusCodes } from 'http-status-codes';
 export const errorHandler = (err, req, res, next) => {
-  if (!err.statusCodes) {
+  if (!err.statusCode) {
     err.statusCodes = StatusCodes.INTERNAL_SERVER_ERROR;
   }
 
   const responseError = {
-    statusCode: err.statusCodes,
+    statusCode: err.statusCode,
     message: err.message || StatusCodes[err.statusCode],
     stack: err.stack
   }
