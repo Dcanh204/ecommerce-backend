@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 // cors port
 app.use(cors({
-  origin: ['http://localhost:5174'],
+  origin: ['http://localhost:4000'],
   credentials: true
 }))
 // convert json
