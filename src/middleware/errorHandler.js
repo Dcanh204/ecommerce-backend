@@ -2,7 +2,7 @@
 import { StatusCodes } from 'http-status-codes';
 export const errorHandler = (err, req, res, next) => {
   if (!err.statusCode) {
-    err.statusCodes = StatusCodes.INTERNAL_SERVER_ERROR;
+    err.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
   }
 
   const responseError = {
