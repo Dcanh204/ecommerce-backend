@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import ApiError from "../utils/ApiError.js";
 import jwt from 'jsonwebtoken';
 
-export const authMiddleware = async (req, res, next) => {
+export const authMiddleware = (req, res, next) => {
   const { accessToken } = req.cookies;
   if (!accessToken) {
     throw new ApiError(StatusCodes.UNAUTHORIZED, 'Vui lòng đăng nhập');

@@ -3,7 +3,7 @@ import authRouter from './auth.routes.js';
 
 const rootRouter = express.Router();
 //auth router
-rootRouter.use("/", authRouter)
+rootRouter.use("/auth", authRouter)
 
 
 export default rootRouter;
