@@ -5,4 +5,5 @@ const categoryRouter = express.Router()
 
 categoryRouter.post("/", authMiddleware, categoryControllers.addCategory)
 categoryRouter.get("/", authMiddleware, categoryControllers.getCategory)
+categoryRouter.put("/:id", authMiddleware, categoryControllers.updateCategory)
 export default categoryRouter;
