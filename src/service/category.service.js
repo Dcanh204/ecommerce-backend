@@ -19,6 +19,19 @@ class CategoryService {
     })
     return category;
   }
+
+  // get category
+  async getCategory(parpage, page, searchValue) {
+    const skipPage = parseInt(parpage) * (parseInt(page) - 1);
+
+    const query = searchValue && searchValue !== '' ? { $text: { $search: searchValue } } : {};
+
+    const [categories, totalCategories] = await Promise.all([
+      Category.find(query).skip(skipPage).limit(parseInt(parpage)).sort({ createdAt: -1 }),
+      Category.countDocuments(query)
+    ]);
+    return { categories, totalCategories };
+  }
 }
 
 export default new CategoryService;

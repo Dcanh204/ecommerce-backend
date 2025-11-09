@@ -4,5 +4,5 @@ import { authMiddleware } from '../../middleware/auth.middleware.js';
 const categoryRouter = express.Router()
 
 categoryRouter.post("/", authMiddleware, categoryControllers.addCategory)
-
+categoryRouter.get("/", authMiddleware, categoryControllers.getCategory)
 export default categoryRouter;
