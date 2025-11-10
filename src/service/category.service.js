@@ -57,6 +57,13 @@ class CategoryService {
     )
     return updateCategory;
   }
+
+  async deleteCategory(id) {
+    const category = await Category.findByIdAndDelete(id);
+    if (!category) {
+      throw new ApiError(StatusCodes.NOT_FOUND, "Danh mục không tồn tại")
+    }
+  }
 }
 
 export default new CategoryService;

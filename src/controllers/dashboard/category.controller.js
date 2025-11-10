@@ -51,3 +51,12 @@ export const updateCategory = catchAsync(async (req, res) => {
     category
   })
 })
+
+export const deleteCategory = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await categoryService.deleteCategory(id);
+  res.status(StatusCodes.OK).json({
+    message: "Xóa danh mục thành công",
+    id
+  })
+})
