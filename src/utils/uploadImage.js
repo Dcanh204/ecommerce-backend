@@ -19,3 +19,14 @@ export const uploadImage = async (filePath, folderName) => {
     throw new ApiError(StatusCodes.CONFLICT, "Tải ảnh thất bại");
   }
 };
+
+export const uploadImages = async (files, folderName) => {
+  try {
+    const results = await Promise.all(
+      files.map(file => cloudinary.uploader.upload(file.filepath, { folder: folderName }))
+    )
+    return results.map(r => r.url);
+  } catch (error) {
+    throw new ApiError(StatusCodes.CONFLICT, "Tải ảnh thất bại");
+  }
+}
