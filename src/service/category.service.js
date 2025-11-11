@@ -23,7 +23,10 @@ class CategoryService {
 
   // get category
   async getCategory(parpage, page, searchValue) {
-    const skipPage = parseInt(parpage) * (parseInt(page) - 1);
+    let skipPage = '';
+    if (parpage && page) {
+      skipPage = parseInt(parpage) * (parseInt(page) - 1);
+    }
 
     const query = searchValue && searchValue !== '' ? { $text: { $search: searchValue } } : {};
 

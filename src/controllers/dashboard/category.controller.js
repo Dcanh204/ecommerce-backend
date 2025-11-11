@@ -9,7 +9,7 @@ import Category from "../../models/category.model.js";
 
 
 export const addCategory = catchAsync(async (req, res) => {
-  const { fields, files } = await parseForm(req);
+  const { fields, files } = await parseForm(req, false);
   let category_name = fields.category_name?.[0]?.trim();
   let image = files.image?.[0];
   if (!category_name || !image) {
@@ -35,7 +35,7 @@ export const getCategory = catchAsync(async (req, res) => {
 
 export const updateCategory = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { fields, files } = await parseForm(req);
+  const { fields, files } = await parseForm(req, false);
   const category_name = fields.category_name?.[0]?.trim();
   const image = files.image?.[0];
   if (!category_name) {
