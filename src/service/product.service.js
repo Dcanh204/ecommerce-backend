@@ -27,6 +27,24 @@ class ProductService {
     })
     return product
   }
+  // get product
+  async getProduct(id, page, parPage, searchValue) {
+    let skipPage = 0;
+    if (page && parPage) {
+      skipPage = parseInt(parPage) * (parseInt(page) - 1);
+    }
+
+    const query = {
+      sellerId: id,
+      ... (searchValue && searchValue.trim() !== '' ? { $text: { $search: searchValue } } : {})
+    }
+
+    const [products, totalProduct] = await Promise.all([
+      Product.find(query).skip(skipPage).limit(parPage).sort({ createdAt: -1 }),
+      Product.countDocuments(query)
+    ])
+    return { products, totalProduct }
+  }
 }
 
 export default new ProductService;

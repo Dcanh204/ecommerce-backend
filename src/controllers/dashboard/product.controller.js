@@ -30,3 +30,13 @@ export const addProduct = catchAsync(async (req, res) => {
   })
 
 })
+
+export const getProduct = catchAsync(async (req, res) => {
+  const { id } = req;
+  const { page, parPage, searchValue } = req.query;
+  const { products, totalProduct } = await productService.getProduct(id, page, parPage, searchValue);
+  res.status(StatusCodes.OK).json({
+    products,
+    totalProduct
+  })
+})
