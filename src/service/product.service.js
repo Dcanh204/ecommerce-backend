@@ -45,6 +45,36 @@ class ProductService {
     ])
     return { products, totalProduct }
   }
+  async getProductById(id) {
+    const product = await Product.findById(id);
+    return product;
+  }
+
+  // update
+  async updateProduct(id, name, brand, price, discount, description, stock, category) {
+    const slug = slugify(name);
+    const product = await Product.findByIdAndUpdate(id, {
+      name,
+      brand,
+      price,
+      discount,
+      description,
+      stock,
+      category,
+      slug
+    }, { new: true });
+    return product;
+  }
+  // update image
+  async updateImage(id, oldImage, newImageUrl) {
+    let { images } = await Product.findById(id);
+    const index = images.findIndex(img => img.trim() === oldImage.trim());
+    images[index] = newImageUrl;
+    const product = await Product.findByIdAndUpdate(id, {
+      images
+    }, { new: true });
+    return product;
+  }
 }
 
 export default new ProductService;
