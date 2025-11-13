@@ -74,6 +74,12 @@ class AuthService {
     })
     return token;
   };
+  async profile_image_upload(id, imageUrl) {
+    const userInfo = await Seller.findByIdAndUpdate(id, {
+      image: imageUrl
+    }, { new: true })
+    return userInfo;
+  };
 }
 
 export default new AuthService();

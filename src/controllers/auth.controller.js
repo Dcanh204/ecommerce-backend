@@ -1,6 +1,9 @@
 import { StatusCodes } from "http-status-codes";
 import AuthService from "../service/auth.service.js";
 import catchAsync from './../utils/catchAsync.js';
+import { parseForm } from './../utils/formidable.js';
+import { uploadImage } from './../utils/uploadImage.js';
+import authService from "../service/auth.service.js";
 
 export const admin_login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
@@ -50,5 +53,17 @@ export const seller_login = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).json({
     message: "Đăng nhập thành công",
     token
+  })
+})
+
+export const profile_image_upload = catchAsync(async (req, res) => {
+  const { id } = req;
+  const { files } = await parseForm(req);
+  const image = files?.image?.[0];
+  const imageUrl = await uploadImage(image.filepath, 'profiles');
+  const userInfo = await authService.profile_image_upload(id, imageUrl);
+  res.status(StatusCodes.OK).json({
+    message: "Cập nhật ảnh thành công",
+    userInfo
   })
 })

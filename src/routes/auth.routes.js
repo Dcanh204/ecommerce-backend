@@ -7,5 +7,6 @@ authRouter.post("/admin-login", authControllers.admin_login);
 authRouter.get("/get-me", authMiddleware, authControllers.getMe);
 authRouter.post("/seller-register", authControllers.seller_register);
 authRouter.post("/seller-login", authControllers.seller_login);
+authRouter.post("/profile-image-upload", authMiddleware, authControllers.profile_image_upload);
 
 export default authRouter;
