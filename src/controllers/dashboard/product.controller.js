@@ -77,3 +77,11 @@ export const updateImage = catchAsync(async (req, res) => {
     product
   })
 })
+
+export const deleteProduct = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await productService.deleteProduct(id);
+  res.status(StatusCodes.OK).json({
+    message: "Xóa sản phẩm thành công"
+  })
+})

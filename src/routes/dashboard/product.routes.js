@@ -8,4 +8,5 @@ productRouter.get('/', authMiddleware, productController.getProduct);
 productRouter.get('/:id', authMiddleware, productController.getProductById);
 productRouter.put('/:id', authMiddleware, productController.updateProduct);
 productRouter.put('/updateImage/:id', authMiddleware, productController.updateImage);
+productRouter.delete('/:id', authMiddleware, productController.deleteProduct);
 export default productRouter;

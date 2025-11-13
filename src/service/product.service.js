@@ -75,6 +75,13 @@ class ProductService {
     }, { new: true });
     return product;
   }
+
+  async deleteProduct(id) {
+    const product = await Product.findByIdAndDelete(id);
+    if (!product) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Sản phẩm không tồn tại');
+    }
+  }
 }
 
 export default new ProductService;
