@@ -39,7 +39,15 @@ const SellerSchema = new Schema({
     default: {}
   },
 }, { timestamps: true });
-
+SellerSchema.index({
+  name: 'text',
+  email: 'text'
+}, {
+  weights: {
+    name: 2,
+    email: 1
+  }
+})
 const Seller = model('Seller', SellerSchema);
 
 export default Seller;
