@@ -18,3 +18,13 @@ export const getSellerById = catchAsync(async (req, res) => {
     seller
   })
 })
+export const updateStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const seller = await sellerService.updateStatus(id, status);
+  res.status(StatusCodes.OK).json({
+    message: "Cập nhật trạng thái thành công",
+    seller
+  })
+
+})

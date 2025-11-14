@@ -22,6 +22,13 @@ class SellerService {
     const seller = await Seller.findById(id);
     return seller;
   }
+
+  async updateStatus(id, status) {
+    const seller = await Seller.findByIdAndUpdate(id, { status }, { new: true });
+    return seller;
+  }
+
+
 }
 
 export default new SellerService;
