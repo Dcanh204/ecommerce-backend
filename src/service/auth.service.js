@@ -80,6 +80,17 @@ class AuthService {
     }, { new: true })
     return userInfo;
   };
+
+  async profile_info_add(id, shopName, city, address) {
+    const userInfo = await Seller.findByIdAndUpdate(id, {
+      shopInfo: {
+        shopName,
+        city,
+        address
+      }
+    }, { new: true })
+    return userInfo;
+  };
 }
 
 export default new AuthService();

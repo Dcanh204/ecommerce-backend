@@ -1,5 +1,4 @@
 import { StatusCodes } from "http-status-codes";
-import AuthService from "../service/auth.service.js";
 import catchAsync from './../utils/catchAsync.js';
 import { parseForm } from './../utils/formidable.js';
 import { uploadImage } from './../utils/uploadImage.js';
@@ -7,7 +6,7 @@ import authService from "../service/auth.service.js";
 
 export const admin_login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
-  const token = await AuthService.admin_login(email, password);
+  const token = await authService.admin_login(email, password);
   res.cookie('accessToken', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -21,7 +20,7 @@ export const admin_login = catchAsync(async (req, res) => {
 
 export const getMe = catchAsync(async (req, res) => {
   const { id, role } = req;
-  const userInfo = await AuthService.getMe(id, role);
+  const userInfo = await authService.getMe(id, role);
   res.status(StatusCodes.OK).json({
     userInfo
   })
@@ -29,7 +28,7 @@ export const getMe = catchAsync(async (req, res) => {
 
 export const seller_register = catchAsync(async (req, res) => {
   const { name, email, password } = req.body;
-  const token = await AuthService.seller_register(name, email, password);
+  const token = await authService.seller_register(name, email, password);
   res.cookie('accessToken', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -44,7 +43,7 @@ export const seller_register = catchAsync(async (req, res) => {
 
 export const seller_login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
-  const token = await AuthService.seller_login(email, password);
+  const token = await authService.seller_login(email, password);
   res.cookie('accessToken', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -64,6 +63,15 @@ export const profile_image_upload = catchAsync(async (req, res) => {
   const userInfo = await authService.profile_image_upload(id, imageUrl);
   res.status(StatusCodes.OK).json({
     message: "Cập nhật ảnh thành công",
+    userInfo
+  })
+})
+export const profile_info_add = catchAsync(async (req, res) => {
+  const { id } = req;
+  const { shopName, city, address } = req.body;
+  const userInfo = await authService.profile_info_add(id, shopName, city, address);
+  res.status(StatusCodes.OK).json({
+    message: "Cập nhật thành công",
     userInfo
   })
 })

@@ -8,5 +8,6 @@ authRouter.get("/get-me", authMiddleware, authControllers.getMe);
 authRouter.post("/seller-register", authControllers.seller_register);
 authRouter.post("/seller-login", authControllers.seller_login);
 authRouter.post("/profile-image-upload", authMiddleware, authControllers.profile_image_upload);
+authRouter.post("/profile-info-add", authMiddleware, authControllers.profile_info_add);
 
 export default authRouter;
