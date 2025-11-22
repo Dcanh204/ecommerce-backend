@@ -8,3 +8,13 @@ export const getCategory = catchAsync(async (req, res) => {
     categories,
   })
 })
+
+export const getProduct = catchAsync(async (req, res) => {
+  const { products, latest_product, topRate_product, discount_product } = await homeService.getProduct();
+  res.status(StatusCodes.OK).json({
+    products,
+    latest_product,
+    topRate_product,
+    discount_product
+  })
+})
