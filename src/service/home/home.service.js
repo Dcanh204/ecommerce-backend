@@ -23,17 +23,56 @@ class HomeService {
     }
     return productArray
   }
+
+  // get products
   async getProduct() {
-    const products = await Product.find().limit(18).sort({ createdAt: -1 })
-    const latest = await Product.find().limit(9).sort({ createdAt: -1 });
-    const topRate = await Product.find({ rating: { $gt: 0 } }).limit(9).sort({ rating: -1 });
-    const discount = await Product.find({ discount: { $gt: 0 } }).limit(9).sort({ discount: -1 });
+    const [products, latest, topRate, discount] = await Promise.all([
+      Product.find().limit(18).sort({ createdAt: -1 }),
+      Product.find().limit(9).sort({ createdAt: -1 }),
+      Product.find({ rating: { $gt: 0 } }).limit(9).sort({ rating: -1 }),
+      Product.find({ discount: { $gt: 0 } }).limit(9).sort({ discount: -1 }),
+    ])
+
 
     return {
       products,
       latest_product: this.formatProducts(latest),
       topRate_product: this.formatProducts(topRate),
       discount_product: this.formatProducts(discount),
+    }
+  }
+
+
+  // query product
+  async query_products(lowPrice, highPrice, category, rating, sortPrice, pageNumber, limit) {
+    const filter = {
+      price: { $gte: Number(lowPrice), $lte: Number(highPrice) }
+    };
+    if (category) filter.category = category;
+    if (rating !== '') {
+      const r = Number(rating);
+      if (r < 5) {
+        filter.rating = { $gte: r, $lt: r + 1 };
+      } else {
+        filter.rating = 5;
+      }
+    }
+    const sort = {}
+    if (sortPrice === 'low-to-high') sort.price = 1
+    if (sortPrice === 'high-to-low') sort.price = -1
+
+    const page = Number(pageNumber);
+    const parPage = Number(limit)
+    const skip = parPage * (page - 1);
+
+    const [products, totalProduct] = await Promise.all([
+      await Product.find(filter).skip(skip).limit(parPage).sort(sort),
+      await Product.countDocuments(filter)
+    ])
+    return {
+      products,
+      totalProduct,
+      parPage
     }
   }
 }
