@@ -21,9 +21,10 @@ export const getProduct = catchAsync(async (req, res) => {
 
 
 export const query_products = catchAsync(async (req, res) => {
+  const searchValue = req.query.searchValue || '';
   const { low, high, category, rating, sortPrice, pageNumber } = req.query;
   const limit = 15
-  const { products, totalProduct, parPage } = await homeService.query_products(low, high, category, rating, sortPrice, pageNumber, limit)
+  const { products, totalProduct, parPage } = await homeService.query_products(low, high, category, rating, sortPrice, pageNumber, limit, searchValue)
 
   res.status(StatusCodes.OK).json({
     products,

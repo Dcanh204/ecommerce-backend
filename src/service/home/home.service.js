@@ -44,7 +44,7 @@ class HomeService {
 
 
   // query product
-  async query_products(lowPrice, highPrice, category, rating, sortPrice, pageNumber, limit) {
+  async query_products(lowPrice, highPrice, category, rating, sortPrice, pageNumber, limit, searchValue) {
     const filter = {
       price: { $gte: Number(lowPrice), $lte: Number(highPrice) }
     };
@@ -56,6 +56,12 @@ class HomeService {
       } else {
         filter.rating = 5;
       }
+    }
+    if (searchValue && searchValue.trim() !== '') {
+      filter.$or = [
+        { name: { $regex: searchValue, $options: 'i' } },
+        { category: { $regex: searchValue, $options: 'i' } }
+      ];
     }
     const sort = {}
     if (sortPrice === 'low-to-high') sort.price = 1
