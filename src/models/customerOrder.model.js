@@ -13,6 +13,10 @@ const CustomerOrderSchema = new Schema({
     type: Number,
     required: true,
   },
+  shippingInfo: {
+    type: Object,
+    required: true
+  },
   payment_status: {
     type: String,
     required: true

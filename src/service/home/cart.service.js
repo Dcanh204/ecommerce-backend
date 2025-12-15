@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import Cart from './../../models/cart.model.js';
 import ApiError from './../../utils/ApiError.js';
 import mongoose from 'mongoose';
+import WishList from '../../models/wishlist.model.js';
 class CartService {
   async add_to_cart(userId, quantity, productId) {
     const getCart = await Cart.findOne({ userId, productId })
@@ -118,6 +119,35 @@ class CartService {
     const product = await Cart.findById(cartId);
     const { quantity } = product;
     await Cart.findByIdAndUpdate(cartId, { quantity: quantity - 1 })
+  }
+
+  async add_wishlist(userId, productId, name, price, image, discount, rating, slug) {
+    const product = await WishList.findOne({ slug });
+    if (product) {
+      throw new ApiError(StatusCodes.CONFLICT, "Sản phẩm đã có trong danh sách yêu thích")
+    }
+    await WishList.create({
+      userId,
+      name,
+      productId,
+      price,
+      rating,
+      slug,
+      discount,
+      image
+    })
+  }
+
+  async get_wishlist(userId) {
+    const wishlist_products = await WishList.find({ userId });
+    return {
+      wishlist_products,
+      wishlistCount: wishlist_products.length
+    }
+  }
+
+  async remove_wishlist(wishlistId) {
+    await WishList.findByIdAndDelete(wishlistId);
   }
 }
 

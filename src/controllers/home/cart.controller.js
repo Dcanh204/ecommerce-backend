@@ -48,3 +48,28 @@ export const quantity_dec = catchAsync(async (req, res) => {
     message: "Cập nhật số lượng thành công"
   })
 })
+
+export const add_wishlist = catchAsync(async (req, res) => {
+  const { userId, productId, name, price, image, discount, rating, slug } = req.body;
+  await cartService.add_wishlist(userId, productId, name, price, image, discount, rating, slug);
+  res.status(StatusCodes.OK).json({
+    message: "Đã thêm vào yêu thích"
+  })
+})
+
+export const get_wishlist = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  const { wishlist_products, wishlistCount } = await cartService.get_wishlist(userId);
+  res.status(StatusCodes.OK).json({
+    wishlist_products,
+    wishlistCount
+  })
+})
+export const remove_wishlist = catchAsync(async (req, res) => {
+  const { wishlistId } = req.params;
+  await cartService.remove_wishlist(wishlistId);
+  res.status(StatusCodes.OK).json({
+    message: "Xóa sản phẩm yêu thích thành công",
+    wishlistId
+  })
+})
