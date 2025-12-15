@@ -19,7 +19,7 @@ class OrderService {
     }
     return true;
   }
-  async place_order(products, price, shipping_fee, items, shoppingInfo, userId) {
+  async place_order(products, price, shipping_fee, items, shippingInfo, userId) {
     let authorOrderData = [];
     let cartId = [];
     let tempDate = moment(Date.now()).format('LLL');
@@ -37,7 +37,7 @@ class OrderService {
     }
     const order = await CustomerOrder.create({
       customerId: userId,
-      shoppingInfo,
+      shippingInfo,
       products: customerOrderProduct,
       price: price + shipping_fee,
       payment_status: 'unpaid',
@@ -71,6 +71,39 @@ class OrderService {
       this.paymentCheck(order.id)
     }, 15000)
     return order.id;
+  }
+
+  // get order
+  async get_order_dashboard(userId) {
+    const [recentOrders, totalOrder, totalPendingOrder, totalCancelledOrder] = await Promise.all([
+      CustomerOrder.find({ customerId: userId }).sort({ createdAt: -1 }).limit(5),
+      CustomerOrder.find({ customerId: userId }).countDocuments(),
+      CustomerOrder.find({ customerId: userId, delivery_status: 'pending' }).countDocuments(),
+      CustomerOrder.find({ customerId: userId, delivery_status: 'cancelled' }).countDocuments(),
+    ])
+
+    return {
+      recentOrders,
+      totalOrder,
+      totalPendingOrder,
+      totalCancelledOrder
+    }
+  }
+
+  async get_orders(userId, status) {
+    const query = {
+      customerId: userId
+    }
+    if (status && status !== 'all') {
+      query.delivery_status = status
+    }
+    const orders = await CustomerOrder.find(query);
+    return orders;
+  }
+
+  async get_order_by_id(orderId) {
+    const order = await CustomerOrder.findById(orderId);
+    return order
   }
 }
 
