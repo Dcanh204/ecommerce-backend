@@ -32,3 +32,22 @@ export const query_products = catchAsync(async (req, res) => {
     parPage
   })
 })
+
+export const product_details = catchAsync(async (req, res) => {
+  const { slug } = req.params;
+  const { product, relatedProducts, fromStore } = await homeService.product_details(slug);
+  res.status(StatusCodes.OK).json({
+    product,
+    relatedProducts,
+    fromStore
+  })
+})
+
+
+export const product_review = catchAsync(async (req, res) => {
+  const { name, review, rating, productId } = req.body;
+  await homeService.product_review(name, review, rating, productId);
+  res.status(StatusCodes.CREATED).json({
+    message: "Đánh giá sản phẩm thành công"
+  })
+})

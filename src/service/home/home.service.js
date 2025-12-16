@@ -1,5 +1,8 @@
+import { StatusCodes } from "http-status-codes";
 import Category from "../../models/category.model.js";
 import Product from './../../models/product.model.js';
+import ApiError from './../../utils/ApiError.js';
+import Review from "../../models/review.model.js";
 
 class HomeService {
   async getCategory() {
@@ -80,6 +83,45 @@ class HomeService {
       totalProduct,
       parPage
     }
+  }
+
+  async product_details(slug) {
+    const product = await Product.findOne({ slug });
+    if (!product) throw new ApiError(StatusCodes.NOT_FOUND, "Sản phẩm không tồn tại");
+
+    const [relatedProducts, fromStore] = await Promise.all([
+      Product.find({ _id: { $ne: product._id }, category: product.category }).limit(12),
+      Product.find({ _id: { $ne: product._id }, sellerId: product.sellerId }).limit(3)
+    ])
+    return {
+      product,
+      relatedProducts,
+      fromStore
+    }
+  }
+
+  async product_review(name, review, rating, productId) {
+    await Review.create({
+      productId,
+      name,
+      rating,
+      review,
+      date: Date.now()
+    })
+    let rat = 0;
+    const reviews = await Review.find({ productId });
+    for (let i = 0; i < reviews.length; i++) {
+      rat = rat + reviews[i].rating
+    }
+    let productRating = 0;
+    if (reviews.length !== 0) {
+      productRating = (rat / reviews.length).toFixed(1)
+    }
+
+    await Product.findByIdAndUpdate(productId, {
+      rating: productRating
+    })
+
   }
 }
 

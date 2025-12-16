@@ -124,7 +124,7 @@ class CartService {
   async add_wishlist(userId, productId, name, price, image, discount, rating, slug) {
     const product = await WishList.findOne({ slug });
     if (product) {
-      throw new ApiError(StatusCodes.CONFLICT, "Sản phẩm đã có trong danh sách yêu thích")
+      throw new ApiError(StatusCodes.CONFLICT, "Sản phẩm đã có trong yêu thích")
     }
     await WishList.create({
       userId,
