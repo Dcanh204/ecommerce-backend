@@ -3,6 +3,7 @@ import Category from "../../models/category.model.js";
 import Product from './../../models/product.model.js';
 import ApiError from './../../utils/ApiError.js';
 import Review from "../../models/review.model.js";
+import mongoose from "mongoose";
 
 class HomeService {
   async getCategory() {
@@ -121,7 +122,53 @@ class HomeService {
     await Product.findByIdAndUpdate(productId, {
       rating: productRating
     })
+  }
 
+  async get_reviews(productId, page) {
+    const limit = 5;
+    const skipPage = limit * (page - 1);
+    const getRating = await Review.aggregate([
+      {
+        $match: { productId: mongoose.Types.ObjectId.createFromHexString(productId) }
+      },
+      {
+        $group: {
+          _id: "$rating",
+          count: {
+            $sum: 1
+          }
+        }
+      }
+    ])
+
+    let rating_reviews = [
+      { rating: 5, sum: 0 },
+      { rating: 4, sum: 0 },
+      { rating: 3, sum: 0 },
+      { rating: 2, sum: 0 },
+      { rating: 1, sum: 0 },
+    ]
+
+    for (let i = 0; i < rating_reviews.length; i++) {
+      for (let j = 0; j < getRating.length; j++) {
+        if (rating_reviews[i].rating === getRating[j]._id) {
+          rating_reviews[i].sum = getRating[j].count;
+          break;
+        }
+
+      }
+    }
+
+    const [totalReview, reviews] = await Promise.all([
+      Review.countDocuments({ productId }),
+      Review.find({ productId }).skip(skipPage).limit(limit).sort({ createdAt: -1 })
+    ])
+
+    return {
+      totalReview,
+      reviews,
+      rating_reviews
+    }
   }
 }
 

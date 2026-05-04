@@ -2,6 +2,7 @@ import moment from "moment";
 import CustomerOrder from './../../models/customerOrder.model.js';
 import AuthorOrder from './../../models/authorOrder.model.js';
 import Cart from './../../models/cart.model.js';
+import mongoose from "mongoose";
 
 class OrderService {
 
@@ -44,6 +45,7 @@ class OrderService {
       delivery_status: 'pending',
       date: tempDate
     })
+    const shippingPerSeller = shipping_fee / products.length;
     for (let i = 0; i < products.length; i++) {
       const pro = products[i].products;
       const pri = products[i].price;
@@ -58,7 +60,7 @@ class OrderService {
         orderId: order._id,
         sellerId,
         products: storeProduct,
-        price: pri,
+        price: pri + shippingPerSeller,
         payment_status: 'unpaid',
         shippingInfo: 'Easy shop',
         delivery_status: 'pending',
@@ -97,13 +99,92 @@ class OrderService {
     if (status && status !== 'all') {
       query.delivery_status = status
     }
-    const orders = await CustomerOrder.find(query);
+    const orders = await CustomerOrder.find(query).sort({ createdAt: -1 });
     return orders;
   }
 
   async get_order_by_id(orderId) {
     const order = await CustomerOrder.findById(orderId);
     return order
+  }
+
+  async get_admin_orders(searchValue, page, parPage) {
+    const skipPage = parPage * (page - 1);
+
+    // const query = searchValue && searchValue !== '' ? { $text: { $search: searchValue } } : {};
+
+    const [orders, totalOrders] = await Promise.all([
+      CustomerOrder.aggregate([
+        {
+          $lookup: {
+            from: 'authororders',
+            localField: '_id',
+            foreignField: 'orderId',
+            as: 'suborder'
+          }
+        },
+        { $sort: { createdAt: -1 } },
+        { $skip: skipPage },
+        { $limit: parPage }
+      ]),
+      CustomerOrder.aggregate([
+        {
+          $lookup: {
+            from: 'authororders',
+            localField: '_id',
+            foreignField: 'orderId',
+            as: 'suborder'
+          }
+        },
+        { $count: 'total' }
+      ])
+    ])
+
+    return { orders, totalOrders: totalOrders[0]?.total || 0 }
+  }
+
+  async get_admin_order(orderId) {
+    const order = await CustomerOrder.aggregate([
+      {
+        $match: { _id: mongoose.Types.ObjectId.createFromHexString(orderId) }
+      },
+      {
+        $lookup: {
+          from: 'authororders',
+          localField: 'orderId',
+          foreignField: '_id',
+          as: 'suborder'
+        }
+      }
+    ])
+
+    return {
+      order: order[0]
+    }
+  }
+
+  async admin_order_status_update(orderId, status) {
+    await CustomerOrder.findByIdAndUpdate(orderId, {
+      delivery_status: status
+    })
+    await AuthorOrder.updateMany(
+      { orderId: orderId },
+      { delivery_status: status }
+    );
+  }
+
+  async get_seller_orders(searchValue, page, parPage, sellerId) {
+    const skipPage = parPage * (page - 1);
+
+    const [orders, totalOrders] = await Promise.all([
+      AuthorOrder.find({ sellerId }).skip(skipPage).limit(parPage).sort({ createdAt: -1 }),
+      AuthorOrder.countDocuments({ sellerId })
+    ])
+
+    return {
+      orders,
+      totalOrders
+    }
   }
 }
 

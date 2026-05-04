@@ -51,3 +51,14 @@ export const product_review = catchAsync(async (req, res) => {
     message: "Đánh giá sản phẩm thành công"
   })
 })
+
+export const get_reviews = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const { totalReview, reviews, rating_reviews } = await homeService.get_reviews(productId, page);
+  res.status(StatusCodes.OK).json({
+    totalReview,
+    reviews,
+    rating_reviews
+  })
+})

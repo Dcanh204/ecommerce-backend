@@ -27,8 +27,6 @@ class SellerService {
     const seller = await Seller.findByIdAndUpdate(id, { status }, { new: true });
     return seller;
   }
-
-
 }
 
 export default new SellerService;

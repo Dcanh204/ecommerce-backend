@@ -7,5 +7,6 @@ homeRouter.get('/products', homeController.getProduct);
 homeRouter.get('/query-products', homeController.query_products);
 homeRouter.get('/products/:slug', homeController.product_details);
 homeRouter.post('/products/reviews', homeController.product_review);
+homeRouter.get('/products/get-reviews/:productId', homeController.get_reviews);
 
 export default homeRouter;

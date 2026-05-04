@@ -38,3 +38,47 @@ export const get_order_dashboard = catchAsync(async (req, res) => {
     totalCancelledOrder
   })
 })
+
+export const get_admin_orders = catchAsync(async (req, res) => {
+  const { searchValue } = req.query;
+  const page = parseInt(req.query.page);
+  const parPage = parseInt(req.query.parPage);
+  const { orders, totalOrders } = await orderService.get_admin_orders(searchValue, page, parPage);
+  res.status(StatusCodes.OK).json({
+    orders,
+    totalOrders
+  })
+})
+
+export const get_admin_order = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  const { order } = await orderService.get_admin_order(orderId);
+  res.status(StatusCodes.OK).json({
+    order
+  })
+})
+export const admin_order_status_update = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  await orderService.admin_order_status_update(orderId, status);
+  res.status(StatusCodes.OK).json({
+    message: "cập nhật trạng thái đơn hàng thành công"
+  })
+})
+
+export const get_seller_orders = catchAsync(async (req, res) => {
+  const { sellerId } = req.params;
+  console.log(sellerId)
+  const { searchValue } = req.query;
+  const page = parseInt(req.query.page);
+  const parPage = parseInt(req.query.parPage);
+  const { orders, totalOrders } = await orderService.get_seller_orders(searchValue, page, parPage, sellerId);
+  res.status(StatusCodes.OK).json({
+    orders,
+    totalOrders
+  })
+})
+
+
+

@@ -32,3 +32,15 @@ export const customer_login = catchAsync(async (req, res) => {
     token
   })
 })
+
+export const customer_logout = catchAsync(async (req, res) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict"
+  })
+
+  res.status(StatusCodes.OK).json({
+    message: "Đăng xuất thành công"
+  })
+})

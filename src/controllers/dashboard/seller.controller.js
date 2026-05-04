@@ -26,5 +26,4 @@ export const updateStatus = catchAsync(async (req, res) => {
     message: "Cập nhật trạng thái thành công",
     seller
   })
-
 })

@@ -4,5 +4,6 @@ const customerRouter = express.Router();
 
 customerRouter.post('/customer-register', customerController.customer_register);
 customerRouter.post('/customer-login', customerController.customer_login);
+customerRouter.get('/logout', customerController.customer_logout);
 
 export default customerRouter;

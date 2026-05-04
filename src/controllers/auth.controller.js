@@ -75,3 +75,15 @@ export const profile_info_add = catchAsync(async (req, res) => {
     userInfo
   })
 })
+
+export const logout = catchAsync(async (req, res) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict"
+  })
+
+  res.status(StatusCodes.OK).json({
+    message: "Đăng xuất thành công"
+  })
+})
