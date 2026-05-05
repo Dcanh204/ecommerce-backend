@@ -8,6 +8,7 @@ chatRouter.post('/customer/send-message-to-seller', chatController.send_message_
 chatRouter.get('/get-friends/:userId', chatController.get_friends);
 
 chatRouter.get('/seller/get-customers/:sellerId', chatController.get_customers);
-chatRouter.get('/seller/get_customer_messages/:customerId', authMiddleware, chatController.get_customer_messages);
+chatRouter.get('/seller/get-customer-messages/:customerId', authMiddleware, chatController.get_customer_messages);
+chatRouter.post('/seller/send-message', authMiddleware, chatController.send_message);
 
 export default chatRouter;

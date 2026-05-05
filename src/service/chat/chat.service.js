@@ -144,5 +144,52 @@ class ChatService {
       currentCustomer
     }
   }
+
+  async send_message(senderId, receiverId, text, shopName) {
+    const message = await Message.create({
+      senderId: senderId,
+      senderName: shopName,
+      receiverId: receiverId,
+      message: text
+    })
+
+    const data = await SellerCustomer.findOne({ myId: senderId })
+    let myFriends = data.myFriends
+    let index = myFriends.findIndex(f => f.fdId === receiverId)
+    while (index > 0) {
+      let temp = myFriends[index]
+      myFriends[index] = myFriends[index - 1]
+      myFriends[index - 1] = temp
+      index--
+    }
+    await SellerCustomer.updateOne(
+      {
+        myId: senderId
+      },
+      {
+        myFriends
+      }
+
+    )
+
+    const data1 = await SellerCustomer.findOne({ myId: receiverId })
+    let myFriends1 = data1.myFriends
+    let index1 = myFriends1.findIndex(f => f.fdId === senderId)
+    while (index1 > 0) {
+      let temp1 = myFriends1[index1]
+      myFriends1[index1] = myFriends[index1 - 1]
+      myFriends1[index1 - 1] = temp1
+      index1--
+    }
+    await SellerCustomer.updateOne(
+      {
+        myId: receiverId
+      },
+      {
+        myFriends1
+      }
+    )
+    return message
+  }
 }
 export default new ChatService();

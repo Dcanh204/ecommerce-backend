@@ -53,5 +53,12 @@ export const get_customer_messages = catchAsync(async (req, res) => {
     messages,
     currentCustomer
   })
+});
 
+export const send_message = catchAsync(async (req, res) => {
+  const { senderId, receiverId, text, shopName } = req.body
+  const message = await chatService.send_message(senderId, receiverId, text, shopName)
+  res.status(StatusCodes.OK).json({
+    message
+  })
 });
