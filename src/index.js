@@ -77,6 +77,7 @@ io.on('connection', (socket) => {
     io.emit('activeSeller', allSeller)
   })
   socket.on('send_message', (msg) => {
+    console.log(msg)
     const customer = findCustomer(msg.receiverId);
     if (customer !== undefined) {
       socket.to(customer.socketId).emit('receive_message', msg);

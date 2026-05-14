@@ -8,6 +8,7 @@ import customerRouter from './home/customer.routes.js';
 import cartRouter from './home/cart.routes.js';
 import orderRouter from './order/order.routes.js';
 import chatRouter from './chat.routes.js';
+import chatbotRouter from './chatbot/chatbot.routes.js';
 const rootRouter = express.Router();
 //auth router
 rootRouter.use("/auth", authRouter);
@@ -19,7 +20,7 @@ rootRouter.use("/customer", customerRouter);
 rootRouter.use("/cart", cartRouter);
 rootRouter.use("/order", orderRouter);
 rootRouter.use("/chat", chatRouter);
-
+rootRouter.use("/chatbot", chatbotRouter);
 
 
 export default rootRouter;
