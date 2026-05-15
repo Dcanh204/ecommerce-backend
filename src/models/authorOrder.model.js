@@ -22,7 +22,7 @@ const authorOrderSchema = new Schema({
     required: true
   },
   shippingInfo: {
-    type: String,
+    type: Object,
     required: true
   },
   delivery_status: {

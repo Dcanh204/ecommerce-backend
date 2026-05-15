@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { Server } from 'socket.io';
 import http from 'http';
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 // cors port

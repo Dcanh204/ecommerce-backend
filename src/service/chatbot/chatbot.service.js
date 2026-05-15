@@ -41,17 +41,14 @@ class ChatbotService {
       let products = [];
       if (searchQuery.toLowerCase() !== "none") {
 
-        products = await Product.find({
+        products = await Product.find({ // Using the extracted search query for more precise search
           $text: { $search: searchQuery }
         }).limit(5);
       }
 
       if (products.length > 0) {
-        context += ` Dưới đây là thông tin các sản phẩm tìm thấy trong kho dựa trên câu hỏi của khách hàng:\n`;
-        products.forEach((product, index) => {
-          context += `${index + 1}. Tên: ${product.name}, Thương hiệu: ${product.brand}, Giá: ${product.price.toLocaleString()} VNĐ, Giảm giá: ${product.discount}%, Tồn kho: ${product.stock}, Mô tả: ${product.description}\n`;
-        });
-        context += "\nHãy dựa vào thông tin sản phẩm trên để tư vấn cho khách hàng một cách chi tiết, thân thiện và chuyên nghiệp. Nếu khách hàng hỏi về giá, hãy tính toán giá sau khi giảm nếu có. Đồng thời, hãy gợi ý rằng khách hàng có thể xem chi tiết sản phẩm và các sản phẩm tương tự bằng cách nhấn vào nút 'Xem thêm' hoặc các thẻ sản phẩm hiển thị.";
+        // Modified context: Instruct Gemini to be concise and confirm product availability.
+        context += ` Chúng tôi đã tìm thấy ${products.length} sản phẩm liên quan đến yêu cầu của khách hàng. Hãy trả lời ngắn gọn xác nhận rằng sản phẩm có sẵn và mời khách hàng xem thông tin chi tiết dưới dạng card sản phẩm hoặc nhấn xem thêm. Không cần liệt kê chi tiết sản phẩm trong câu trả lời của AI.`;
 
         const aiResponse = await this._getGeminiResponse(context, message);
         return { aiResponse, products };
@@ -61,10 +58,10 @@ class ChatbotService {
         return { aiResponse, products: [] };
       }
     } else {
-      // Nếu là chào hỏi, cung cấp context phản hồi thân thiện
-      context = "Bạn là trợ lý bán hàng thông minh của một cửa hàng thương mại điện tử Easy Shop. Khách hàng vừa gửi lời chào. Hãy phản hồi lại một cách ngắn gọn, niềm nở, thân thiện và giới thiệu rằng bạn có thể hỗ trợ họ tìm kiếm thông tin sản phẩm hoặc tư vấn mua sắm.";
-      const aiResponse = await this._getGeminiResponse(context, message);
-      return { aiResponse, products: [] };
+      return {
+        aiResponse: "Chào bạn! Tôi là trợ lý ảo của Easy Shop. Hãy cho tôi biết bạn cần tìm sản phẩm gì nhé.", // Shortened greeting
+        products: []
+      };
     }
   }
 }

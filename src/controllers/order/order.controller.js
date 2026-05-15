@@ -69,7 +69,6 @@ export const admin_order_status_update = catchAsync(async (req, res) => {
 
 export const get_seller_orders = catchAsync(async (req, res) => {
   const { sellerId } = req.params;
-  console.log(sellerId)
   const { searchValue } = req.query;
   const page = parseInt(req.query.page);
   const parPage = parseInt(req.query.parPage);
@@ -77,6 +76,25 @@ export const get_seller_orders = catchAsync(async (req, res) => {
   res.status(StatusCodes.OK).json({
     orders,
     totalOrders
+  })
+})
+
+export const get_seller_order = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  const order = await orderService.get_seller_order(orderId);
+  res.status(StatusCodes.OK).json({
+    order
+  })
+})
+
+export const seller_order_status_update = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+  console.log(status);
+
+  await orderService.seller_order_status_update(orderId, status);
+  res.status(StatusCodes.OK).json({
+    message: "Cập nhật trạng thái đơn hàng thành công"
   })
 })
 

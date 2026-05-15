@@ -28,7 +28,7 @@ class ProductService {
     return product
   }
   // get product
-  async getProduct(id, page, parPage, searchValue) {
+  async getProduct(id, page, parPage, searchValue, discount) {
     let skipPage = 0;
     if (page && parPage) {
       skipPage = parseInt(parPage) * (parseInt(page) - 1);
@@ -36,7 +36,8 @@ class ProductService {
 
     const query = {
       sellerId: id,
-      ... (searchValue && searchValue.trim() !== '' ? { $text: { $search: searchValue } } : {})
+      ... (searchValue && searchValue.trim() !== '' ? { $text: { $search: searchValue } } : {}),
+      ...(discount === 'true' ? { discount: { $gt: 0 } } : {})
     }
 
     const [products, totalProduct] = await Promise.all([

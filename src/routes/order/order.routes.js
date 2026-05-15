@@ -14,4 +14,6 @@ orderRouter.put('/admin/order-status/update/:orderId', orderController.admin_ord
 
 // seller
 orderRouter.get('/seller/orders/:sellerId', orderController.get_seller_orders)
+orderRouter.get('/seller/order/:orderId', orderController.get_seller_order)
+orderRouter.put('/seller/order-status/update/:orderId', orderController.seller_order_status_update)
 export default orderRouter;

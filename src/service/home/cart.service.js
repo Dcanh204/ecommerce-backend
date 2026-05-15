@@ -34,12 +34,12 @@ class CartService {
     let calculatePrice = 0;
     let cart_product_count = 0;
 
-    const outOfStockProduct = cart_products.filter(product => product.products[0].stock < product.quantity);
+    const outOfStockProduct = cart_products.filter(product => product.products[0]?.stock < product.quantity);
     for (let i = 0; i < outOfStockProduct.length; i++) {
       cart_product_count += outOfStockProduct[i].quantity;
     }
 
-    const stock_product = cart_products.filter(product => product.products[0].stock >= product.quantity);
+    const stock_product = cart_products.filter(product => product.products[0]?.stock >= product.quantity);
     for (let i = 0; i < stock_product.length; i++) {
       const { quantity } = stock_product[i];
       cart_product_count = buy_product_item + quantity

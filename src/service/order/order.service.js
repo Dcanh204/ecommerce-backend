@@ -62,7 +62,7 @@ class OrderService {
         products: storeProduct,
         price: pri + shippingPerSeller,
         payment_status: 'unpaid',
-        shippingInfo: 'Easy shop',
+        shippingInfo: shippingInfo,
         delivery_status: 'pending',
         date: tempDate
       })
@@ -185,6 +185,33 @@ class OrderService {
       orders,
       totalOrders
     }
+  }
+
+  async get_seller_order(orderId) {
+    const order = await AuthorOrder.findById(orderId);
+    return order;
+  }
+
+  async seller_order_status_update(orderId, status) {
+    const authorOrder = await AuthorOrder.findByIdAndUpdate(
+      orderId,
+      {
+        delivery_status: status
+      },
+      { new: true }
+    );
+
+    if (!authorOrder) {
+      throw new Error('Order not found');
+    }
+    await CustomerOrder.findByIdAndUpdate(
+      authorOrder.orderId,
+      {
+        delivery_status: status
+      }
+    );
+
+    return authorOrder;
   }
 }
 
