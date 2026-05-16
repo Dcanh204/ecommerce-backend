@@ -71,7 +71,7 @@ class OrderService {
     await Cart.deleteMany({ _id: { $in: cartId } });
     setTimeout(() => {
       this.paymentCheck(order.id)
-    }, 15000)
+    }, 15 * 60 * 1000)
     return order.id;
   }
 

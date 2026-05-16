@@ -1,7 +1,15 @@
 import catchAsync from "../../utils/catchAsync.js";
 import orderService from "../../service/order/order.service.js";
 import { StatusCodes } from "http-status-codes";
-
+import Stripe from 'stripe';
+import CustomerOrder from "../../models/customerOrder.model.js";
+import AuthorOrder from "../../models/authorOrder.model.js";
+import moment from "moment";
+import MyShopWallet from "../../models/myShopWallet.model.js";
+import SellerWallet from "../../models/sellerWallet.model.js";
+import mongoose from 'mongoose'
+import Product from "../../models/product.model.js";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const place_order = catchAsync(async (req, res) => {
   const { products, price, shipping_fee, items, shippingInfo, userId } = req.body;
@@ -98,5 +106,75 @@ export const seller_order_status_update = catchAsync(async (req, res) => {
   })
 })
 
+export const create_payment = async (req, res) => {
+  const { totalPrice } = req.body;
+  try {
+    const exchangeRate = 26000;
 
+    const usd = totalPrice / exchangeRate;
 
+    const payment = await stripe.paymentIntents.create({
+      amount: Math.round(usd * 100),
+      currency: 'usd',
+      automatic_payment_methods: {
+        enabled: true
+      }
+    });
+    return res.status(StatusCodes.OK).json({ clientSecret: payment.client_secret })
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+export const order_confirm = async (req, res) => {
+  const { orderId } = req.params
+  try {
+    await CustomerOrder.findByIdAndUpdate(orderId, { payment_status: 'paid' })
+    await AuthorOrder.updateMany({ orderId: new mongoose.Types.ObjectId(orderId) }, {
+      payment_status: 'paid', delivery_status: 'pending'
+    })
+    const cuOrder = await CustomerOrder.findById(orderId)
+
+    const auOrder = await AuthorOrder.find({
+      orderId: new mongoose.Types.ObjectId(orderId)
+    })
+
+    for (let i = 0; i < auOrder.length; i++) {
+
+      const products = auOrder[i].products
+
+      for (let j = 0; j < products.length; j++) {
+
+        await Product.findByIdAndUpdate(
+          products[j]._id,
+          {
+            $inc: {
+              stock: -products[j].quantity
+            }
+          }
+        )
+      }
+    }
+
+    const month = moment().month() + 1
+    const year = moment().year()
+    await MyShopWallet.create({
+      amount: cuOrder.price,
+      month: month,
+      year: year
+    })
+
+    for (let i = 0; i < auOrder.length; i++) {
+      await SellerWallet.create({
+        sellerId: auOrder[i].sellerId.toString(),
+        amount: auOrder[i].price,
+        month: month,
+        year: year
+      })
+    }
+    return res.status(StatusCodes.OK).json({ message: 'success' })
+  } catch (error) {
+    console.log(error)
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Lỗi hệ thống' })
+  }
+}

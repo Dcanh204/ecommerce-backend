@@ -16,4 +16,8 @@ orderRouter.put('/admin/order-status/update/:orderId', orderController.admin_ord
 orderRouter.get('/seller/orders/:sellerId', orderController.get_seller_orders)
 orderRouter.get('/seller/order/:orderId', orderController.get_seller_order)
 orderRouter.put('/seller/order-status/update/:orderId', orderController.seller_order_status_update)
+
+// payment
+orderRouter.post('/create-payment', orderController.create_payment)
+orderRouter.get('/confirm/:orderId', orderController.order_confirm)
 export default orderRouter;
