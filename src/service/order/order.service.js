@@ -7,18 +7,24 @@ import mongoose from "mongoose";
 class OrderService {
 
   async paymentCheck(id) {
-    const order = await CustomerOrder.findById(id);
-    if (order.payment_status === 'unpaid') {
-      await CustomerOrder.findByIdAndUpdate(id, {
-        delivery_status: 'cancelled'
-      })
-      await AuthorOrder.updateMany({
-        orderId: id
-      }, {
-        delivery_status: 'cancelled'
-      })
+    try {
+      const order = await CustomerOrder.findById(id);
+      // Kiểm tra đơn hàng tồn tại và vẫn chưa thanh toán
+      if (order && order.payment_status === 'unpaid') {
+        await CustomerOrder.findByIdAndUpdate(id, {
+          delivery_status: 'cancelled'
+        });
+
+        // Ép kiểu id sang ObjectId để đảm bảo AuthorOrder tìm đúng bản ghi
+        await AuthorOrder.updateMany({
+          orderId: new mongoose.Types.ObjectId(id)
+        }, {
+          delivery_status: 'cancelled'
+        });
+      }
+    } catch (error) {
+      console.error("Lỗi trong quá trình tự động hủy đơn hàng:", error);
     }
-    return true;
   }
   async place_order(products, price, shipping_fee, items, shippingInfo, userId) {
     let authorOrderData = [];
@@ -69,9 +75,12 @@ class OrderService {
     }
     await AuthorOrder.insertMany(authorOrderData);
     await Cart.deleteMany({ _id: { $in: cartId } });
+
+    // Thực hiện kiểm tra thanh toán sau 15 phút
     setTimeout(() => {
-      this.paymentCheck(order.id)
-    }, 15 * 60 * 1000)
+      this.paymentCheck(order._id.toString());
+    }, 15 * 60 * 1000);
+
     return order.id;
   }
 
