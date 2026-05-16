@@ -2,6 +2,9 @@ import express from 'express';
 import * as orderController from '../../controllers/order/order.controller.js'
 const orderRouter = express.Router();
 
+// PAYMENT
+orderRouter.post('/create-vnpay-payment', orderController.create_vnpay_payment)
+orderRouter.get('/vnpay-return', orderController.vnpay_return)
 orderRouter.post('/', orderController.place_order);
 orderRouter.get('/dashboard/:userId', orderController.get_order_dashboard);
 orderRouter.get('/', orderController.get_orders);
@@ -20,4 +23,6 @@ orderRouter.put('/seller/order-status/update/:orderId', orderController.seller_o
 // payment
 orderRouter.post('/create-payment', orderController.create_payment)
 orderRouter.get('/confirm/:orderId', orderController.order_confirm)
+
+
 export default orderRouter;
